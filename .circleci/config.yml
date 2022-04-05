@@ -13,6 +13,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
+            aws s3 rm --recursive s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
           
@@ -228,7 +229,7 @@ jobs:
             cd frontend
             npm install
             npm run build
-            
+
       - run:
           name: Get backend url
           command: |
@@ -242,7 +243,11 @@ jobs:
           name: Deploy frontend objects
           command: |
             cd frontend
-            npm install
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            yum -y install nodejs
+            npm install -g npm
+            npm install oauth2
+            npm install webpack
             npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
@@ -291,4 +296,4 @@ workflows:
       - deploy-frontend:
           requires: [run-migrations]
       - deploy-backend:
-          requires: [run-migrations]
+          requires: [run-migrations, deploy-frontend]
