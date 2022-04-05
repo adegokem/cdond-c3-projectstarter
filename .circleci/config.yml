@@ -244,7 +244,7 @@ jobs:
           command: |
             cd frontend
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            yum -y install nodejs
+            apt-get -y install nodejs
             npm install -g npm
             npm install oauth2
             npm install webpack
