@@ -182,6 +182,87 @@ jobs:
             ansible-playbook -i inventory.txt configure-server.yml
       - destroy-environment
 
+  run-migrations:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - run:
+          name: Run migrations
+          command: |
+            cd ~/project/backend
+            npm install
+            npm run migrations > migrations_dump.txt
+            cat migrations_dump.txt
+
+      - run:
+          name: Send migration results to kvdb.io
+          command: |
+                    
+            if grep -q "has been executed successfully." ~/project/backend/migrations_dump.txt
+            
+            then
+                curl https://kvdb.io/HLTxMDZdRG8QdF8RQQKedN/migration_${CIRCLE_WORKFLOW_ID:0:7}  -d '1'
+
+            fi
+      - destroy-environment  
+  deploy-frontend:
+    docker:
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            sudo apt-get -y -qq update
+            sudo apt-get -y -qq install ansible
+            sudo apt-get -y -qq install python3
+            sudo apt-get -y -qq install awscli
+            sudo apt-get -y -qq install npm
+            sudo apt-get -y -qq install node
+            sudo apt-get -y -qq install tar
+      - run:
+          name: Get backend url
+          command: |
+            BACKEND_IP=$(aws ec2 describe-instances \
+            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --query 'Reservations[0].Instances[0].PublicIpAddress' \
+            --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+      - run:
+          name: Deploy frontend objects
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
+            aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+      - destroy-environment
+
+  deploy-backend:
+    docker:
+      - image: python:3.7-alpine3.11
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["cd:1a:35:62:d7:70:4f:c5:62:9e:bb:31:97:70:09:7d"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible tar gzip nodejs npm rsync openssh
+            pip install awscli
+      - run:
+          name: Deploy backend
+          command: |
+            cd ~/project/.cicleci/ansible
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment
+            
 workflows:
   default:
     jobs:
@@ -199,4 +280,9 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
- 
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
