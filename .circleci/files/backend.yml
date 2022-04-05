@@ -28,8 +28,8 @@ Resources:
       InstanceType: t2.micro
       SecurityGroups:
         - Ref: InstanceSecurityGroup
-      KeyName: udalab
-      ImageId: ami-00ee4df451840fa9d 
+      KeyName: udapeople
+      ImageId: ami-0892d3c7ee96c0bf7
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
