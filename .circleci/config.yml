@@ -216,12 +216,13 @@ jobs:
           name: Install dependencies
           command: |
             sudo apt-get -y -qq update
+            sudo apt-get -y -qq install npm
             sudo apt-get -y -qq install ansible
             sudo apt-get -y -qq install python3
             sudo apt-get -y -qq install awscli
-            sudo apt-get -y -qq install npm
-            sudo apt-get -y -qq install node
+            sudo apt-get -y -qq install nodejs
             sudo apt-get -y -qq install tar
+            
       - run:
           name: Get backend url
           command: |
