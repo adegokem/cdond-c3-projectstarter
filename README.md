@@ -25,6 +25,7 @@ For your submission, please submit the following:
   1. Public Url to GitHub repository (not private) [URL01]
      "https://github.com/adegokem/cdond-c3-projectstarter"
   1. Public URL for your S3 Bucket (aka, your green candidate front-end) [URL02]
+     "http://udapeople-8c2262d.s3-website-us-west-2.amazonaws.com"
   1. Public URL for your CloudFront distribution (aka, your blue production front-end) [URL03]
   1. Public URLs to deployed application back-end in EC2 [URL04]
   1. Public URL to your Prometheus Server [URL05]
