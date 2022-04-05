@@ -184,9 +184,11 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:14.18.1
     steps:
       - checkout
+      - restore_cache:
+          keys: [backend-build-cache]
       - run:
           name: Run migrations
           command: |
@@ -205,7 +207,7 @@ jobs:
       - destroy-environment  
   deploy-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:14.18.1
     steps:
       - checkout
       - attach_workspace:
