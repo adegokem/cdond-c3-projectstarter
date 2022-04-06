@@ -208,7 +208,7 @@ jobs:
       - destroy-environment  
   deploy-frontend:
     docker:
-      - image: circleci/node:14.18.1
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - attach_workspace:
@@ -246,13 +246,18 @@ jobs:
           command: |
             cd frontend
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            sudo apt-get -y install nodejs
             sudo npm install -g npm
             sudo npm install oauth2
             sudo npm install webpack
             sudo npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            exit 1
+      - run:
+          name: delete s3 bucket
+          when: on_fail
+          command: |
+            aws s3 rm --recursive s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
       - destroy-environment
 
   deploy-backend:
@@ -267,7 +272,7 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            apk add --update ansible tar gzip nodejs npm rsync openssh
+            apk add --update ansible tar gzip nodejs npm rsync openssh curl
             pip install awscli
       - run:
           name: Deploy backend
