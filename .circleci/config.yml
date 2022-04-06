@@ -224,6 +224,13 @@ jobs:
             sudo apt-get -y -qq install tar
 
       - run:
+          name: Build frontend
+          command: |
+            cd frontend
+            npm install
+            npm run build
+            
+      - run:
           name: Get backend url
           command: |
             BACKEND_IP=$(aws ec2 describe-instances \
