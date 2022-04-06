@@ -219,7 +219,7 @@ jobs:
             sudo apt-get -y -qq update
             sudo apt-get -y -qq install ansible
             sudo apt-get -y -qq install python3
-            sudo apt-get -y -qq install awscliv2
+            sudo apt-get -y -qq install awscli
             sudo apt-get -y -qq install nodejs
             sudo apt-get -y -qq install tar
             
