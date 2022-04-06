@@ -246,11 +246,11 @@ jobs:
           command: |
             cd frontend
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            apt-get -y install nodejs
-            npm install -g npm
-            npm install oauth2
-            npm install webpack
-            npm run build
+            sudo apt-get -y install nodejs
+            sudo npm install -g npm
+            sudo npm install oauth2
+            sudo npm install webpack
+            sudo npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
