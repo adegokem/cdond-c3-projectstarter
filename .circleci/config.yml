@@ -222,13 +222,6 @@ jobs:
             sudo apt-get -y -qq install awscli
             sudo apt-get -y -qq install nodejs
             sudo apt-get -y -qq install tar
-            
-      - run:
-          name: Build frontend
-          command: |
-            cd frontend
-            npm install
-            npm run build
 
       - run:
           name: Get backend url
@@ -244,6 +237,13 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
+            cd frontend
+            curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            yum -y install nodejs
+            npm install -g npm
+            npm install oauth2
+            npm install webpack
+            npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
       - destroy-environment
