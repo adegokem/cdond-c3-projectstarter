@@ -215,27 +215,15 @@ jobs:
           name: Install tar/gzip utility
           command: |
             yum install -y tar gzip
-            yum install -y unzip 
-      - attach_workspace:
-          at: ~/
+            yum install -y unzip      
       - run:
           name: Install dependencies
           command: |
-            apt-get -y -qq update
-            apt-get -y -qq install ansible
-            apt-get -y -qq install python3
-            apt-get -y -qq install nodejs
-            apt-get -y -qq install tar
+            apt-get update && sudo apt-get install -yy less
             curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
             unzip awscliv2.zip
             ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
 
-      - run:
-          name: Build frontend
-          command: |
-            cd frontend
-            npm install
-            npm run build
 
       - run:
           name: Get backend url
@@ -253,6 +241,7 @@ jobs:
           command: |
             cd frontend
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
+            yum -y install nodejs
             npm install -g npm
             npm install oauth2
             npm install webpack
