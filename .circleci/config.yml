@@ -208,7 +208,7 @@ jobs:
       - destroy-environment  
   deploy-frontend:
     docker:
-      - image: python:3.7-alpine3.11
+      - image: amazon/aws-cli
     steps:
       - checkout
       - attach_workspace:
@@ -216,12 +216,14 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get -y -qq update
-            sudo apt-get -y -qq install ansible
-            sudo apt-get -y -qq install python3
-            sudo apt-get -y -qq install awscli
-            sudo apt-get -y -qq install nodejs
-            sudo apt-get -y -qq install tar
+            apt-get -y -qq update
+            apt-get -y -qq install ansible
+            apt-get -y -qq install python3
+            apt-get -y -qq install nodejs
+            apt-get -y -qq install tar
+            curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            unzip awscliv2.zip
+            ./aws/install --bin-dir /usr/local/bin --install-dir /usr/local/aws-cli --update
 
       - run:
           name: Build frontend
@@ -246,10 +248,10 @@ jobs:
           command: |
             cd frontend
             curl -sL https://rpm.nodesource.com/setup_lts.x | bash -
-            sudo npm install -g npm
-            sudo npm install oauth2
-            sudo npm install webpack
-            sudo npm run build
+            npm install -g npm
+            npm install oauth2
+            npm install webpack
+            npm run build
             tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             exit 1
