@@ -337,6 +337,7 @@ jobs:
             cd /root/project/.circleci/ansible
               echo "Contents  of the inventory.txt file is _____________________________________>>"
               cat inventory.txt
+              export ANSIBLE_HOST_KEY_CHECKING=False
               ansible-playbook deploy-backend.yml -i inventory.txt
                
       - destroy-environment
