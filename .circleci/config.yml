@@ -301,7 +301,7 @@ jobs:
       #       cd .circleci/ansible
       #       echo "Contents  of the inventory.txt file is -------"
       #       cat inventory.txt
-       - run:
+      - run:
           name: Deploy backend
           command: |
               cd backend
@@ -311,7 +311,7 @@ jobs:
               npm run build
               echo build successful
 
-       - run:
+      - run:
           name: Add env vars
           command: |
               echo ENVIROMENT=production > "backend/dist/.env"
