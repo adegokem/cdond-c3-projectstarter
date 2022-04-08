@@ -7,15 +7,17 @@ commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
     parameters:
-      # Add parameter here   
+      workflow-id:
+        type: string
+        default: ${CIRCLE_WORKFLOW_ID:0:7}
     steps:
       - run:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rb --force s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}
             aws cloudformation delete-stack --stack-name udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}
+            aws s3 rb --force s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}
   
   revert-migration:
     description: Revert the last migration if successfully run in the current workflow
@@ -190,9 +192,9 @@ jobs:
           name: Install dependencies
           command: |
             cd ~/project/.circleci/ansible
-            apk add --update ansible
+            apk add --update ansible gzip nodejs npm curl
       - run:
-          name: Configure server
+          name: Configure server running playbook
           command: |
             cd ~/project/.circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
@@ -200,7 +202,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:14.18.1
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -306,20 +308,17 @@ jobs:
 
   smoke-test:
     docker:
-      - image: circleci/node:14.18.1 
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            sudo apt-get install python
-            sudo apt-get install python-pip
-            pip install awscli
-            curl -sL https://deb.nodesource.com/setup_12.x | sudo -E bash -
-            sudo apt install nodejs
-            node --version
-            npm --version
-            aws --version
+            ssudo apt update
+            sudo apt upgrade -y
+            sudo apt install -y curl
+            sudo apt install -y awscli
+            sudo apt install -y nodejs
       - attach_workspace:
           at: ~/
       - run:
