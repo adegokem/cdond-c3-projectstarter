@@ -192,7 +192,7 @@ jobs:
           name: Install dependencies
           command: |
             cd ~/project/.circleci/ansible
-            apk add --update ansible gzip nodejs npm curl
+            apk add --update ansible 
       - run:
           name: Configure server running playbook
           command: |
@@ -202,7 +202,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:14.18.1
     steps:
       - checkout
       - restore_cache:
