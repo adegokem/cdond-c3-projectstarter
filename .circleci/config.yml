@@ -202,7 +202,7 @@ jobs:
 
   run-migrations:
     docker:
-      - image: circleci/node:14.18.1
+      - image: circleci/node:13.8.0
     steps:
       - checkout
       - restore_cache:
@@ -308,19 +308,17 @@ jobs:
 
   smoke-test:
     docker:
-      - image: circleci/node:13.8.0
+      - image: circleci/node:14.18.1 
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            ssudo apt update
+            sudo apt update
             sudo apt upgrade -y
             sudo apt install -y curl
             sudo apt install -y awscli
             sudo apt install -y nodejs
-      - attach_workspace:
-          at: ~/
       - run:
           name: Backend smoke test.
           command: |
@@ -328,7 +326,6 @@ jobs:
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text)
-            curl "http://${BACKEND_IP}:3030/api/status"
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
