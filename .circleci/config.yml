@@ -317,7 +317,6 @@ jobs:
             sudo apt install -y curl
             sudo apt install -y awscli
             sudo apt install -y nodejs
-            sudo apt install -y npm
       - run:
           name: Backend smoke test.
           command: |
