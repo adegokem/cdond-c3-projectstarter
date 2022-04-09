@@ -315,7 +315,7 @@ jobs:
       - run:
           name: Add env vars
           command: |
-              echo ENVIROMENT=production > "backend/.env"
+              touch .emv
               echo TYPEORM_CONNECTION=postgres >> "backend/.env"
               echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
               echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
@@ -325,6 +325,8 @@ jobs:
               echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend//.env"
               echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
               echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
+
+              cat .env
       - run:
           name: Configure server
           command: |    
