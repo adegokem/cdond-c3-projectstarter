@@ -314,7 +314,8 @@ jobs:
       - run:
           name: Add env vars
           command: |
-              touch .emv
+              touch .env
+              echo ENVIRONMENT=production >> "backend/.env"
               echo TYPEORM_CONNECTION=postgres >> "backend/.env"
               echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
               echo TYPEORM_HOST=$TYPEORM_HOST >> "backend/.env"
@@ -324,7 +325,7 @@ jobs:
               echo TYPEORM_MIGRATIONS_DIR=$TYPEORM_MIGRATIONS_DIR >> "backend//.env"
               echo TYPEORM_PASSWORD=$TYPEORM_PASSWORD >> "backend/.env"
               echo TYPEORM_DATABASE=$TYPEORM_DATABASE >> "backend/.env"
-              cat .env
+              
 
       - run:
           name: Configure server
@@ -340,9 +341,7 @@ jobs:
               echo "Contents  of the inventory.txt file is _____________________________________>>"
               cat inventory.txt
               export ANSIBLE_HOST_KEY_CHECKING=False
-              ansible-playbook deploy-backend.yml -i inventory.txt
-              npm run start
-               
+              ansible-playbook deploy-backend.yml -i inventory.txt               
       - destroy-environment
       - revert-migration
 
